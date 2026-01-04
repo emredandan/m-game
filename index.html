@@ -1,909 +1,265 @@
-htmlDownloadCopy code<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Highway Runner - Pixel Arcade</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
-            font-family: 'Courier New', monospace;
-        }
-
-        #gameCanvas {
-            display: block;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-        }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-
-        .panel {
-            background: linear-gradient(180deg, #2a2a4a 0%, #1a1a2e 100%);
-            border: 4px solid #ff6b6b;
-            padding: 40px;
-            text-align: center;
-            max-width: 450px;
-            box-shadow: 0 0 40px rgba(255, 107, 107, 0.5), inset 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        h1 {
-            color: #ffd93d;
-            font-size: 2.5rem;
-            text-shadow: 4px 4px 0 #c73e1d;
-            margin-bottom: 10px;
-            letter-spacing: 3px;
-        }
-
-        .subtitle {
-            color: #6bcb77;
-            font-size: 1rem;
-            margin-bottom: 25px;
-        }
-
-        .instructions {
-            background: rgba(0,0,0,0.4);
-            padding: 15px;
-            margin: 20px 0;
-            border-left: 3px solid #4ecdc4;
-            text-align: left;
-        }
-
-        .instructions p {
-            color: #ddd;
-            margin: 8px 0;
-            font-size: 0.9rem;
-        }
-
-        .key {
-            display: inline-block;
-            background: #444;
-            color: #fff;
-            padding: 3px 10px;
-            border-radius: 3px;
-            border-bottom: 3px solid #222;
-            font-weight: bold;
-        }
-
-        .btn {
-            background: linear-gradient(180deg, #ff6b6b 0%, #c73e1d 100%);
-            color: white;
-            border: none;
-            padding: 15px 50px;
-            font-size: 1.3rem;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 6px 0 #8b1e1e;
-            transition: all 0.1s;
-            margin-top: 15px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 0 #8b1e1e;
-        }
-
-        .btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #8b1e1e;
-        }
-
-        .hud {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 30px;
-            pointer-events: none;
-            z-index: 50;
-        }
-
-        .hud-item {
-            background: rgba(0, 0, 0, 0.7);
-            color: #ffd93d;
-            padding: 10px 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border: 2px solid #ffd93d;
-            text-shadow: 2px 2px 0 #000;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .final-score {
-            font-size: 3rem;
-            color: #ffd93d;
-            text-shadow: 4px 4px 0 #c73e1d;
-            margin: 20px 0;
-        }
-
-        .high-score-text {
-            color: #6bcb77;
-            font-size: 1.1rem;
-        }
-
-        #mobile-controls {
-            position: absolute;
-            bottom: 30px;
-            left: 0;
-            right: 0;
-            display: none;
-            justify-content: center;
-            gap: 20px;
-            z-index: 60;
-            pointer-events: auto;
-        }
-
-        .mobile-btn {
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            color: white;
-            font-size: 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .mobile-btn:active {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        @media (max-width: 768px) {
-            #mobile-controls {
-                display: flex;
-            }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tempo Testnet Click Game</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#0b1020; color:#eaf0ff; margin:0; }
+    .wrap { max-width: 780px; margin: 40px auto; padding: 20px; }
+    .card { background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:16px; padding:18px; margin-bottom:14px; }
+    button { cursor:pointer; border:0; border-radius:12px; padding:10px 14px; font-weight:700; }
+    .btn { background:#ff4d6d; color:#0b1020; }
+    .btn2 { background:#2ee59d; color:#07121a; }
+    .muted { color: rgba(234,240,255,0.75); }
+    .row { display:flex; gap:10px; flex-wrap: wrap; align-items:center; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    #target { width: 160px; height:160px; border-radius: 999px; display:grid; place-items:center; margin: 16px auto;
+      background: radial-gradient(circle at 30% 30%, #ffd166, #ff4d6d);
+      box-shadow: 0 18px 50px rgba(255,77,109,0.35);
+      user-select:none; font-size:40px; }
+    #target:active { transform: scale(0.96); }
+    .big { font-size: 42px; font-weight: 900; }
+  </style>
 </head>
 <body>
-
-<canvas id="gameCanvas"></canvas>
-
-<div class="hud hidden" id="hud">
-    <div class="hud-item" id="score-display">SCORE: 0</div>
-    <div class="hud-item" id="speed-display">SPEED: 60 MPH</div>
-    <div class="hud-item" id="high-display">BEST: 0</div>
-</div>
-
-<div id="mobile-controls" class="hidden">
-    <div class="mobile-btn" id="btn-left">←</div>
-    <div class="mobile-btn" id="btn-right">→</div>
-</div>
-
-<div class="overlay" id="start-screen">
-    <div class="panel">
-        <h1>HIGHWAY RUNNER</h1>
-        <p class="subtitle">★ PIXEL ARCADE EDITION ★</p>
-        <div class="instructions">
-            <p><span class="key">←</span> <span class="key">→</span> or <span class="key">A</span> <span class="key">D</span> — Change Lane</p>
-            <p><span class="key">SPACE</span> — Boost Speed</p>
-            <p>Dodge traffic, survive as long as you can!</p>
-        </div>
-        <button class="btn" id="start-btn">START GAME</button>
+  <div class="wrap">
+    <div class="card">
+      <h2 style="margin:0 0 8px;">Tempo Testnet Click Game</h2>
+      <div class="muted">
+        Oynamak için MetaMask (Chrome eklentisi) bağlamak zorunlu. Ağ otomatik Tempo Testnet (Andantino)’ye alınır.
+      </div>
     </div>
-</div>
 
-<div class="overlay hidden" id="gameover-screen">
-    <div class="panel">
-        <h1>GAME OVER</h1>
-        <div class="final-score" id="final-score">0</div>
-        <p class="high-score-text" id="high-score-text">HIGH SCORE: 0</p>
-        <button class="btn" id="restart-btn">PLAY AGAIN</button>
+    <div class="card" id="connectCard">
+      <div class="row">
+        <button class="btn" id="btnConnect">🦊 MetaMask ile Bağlan</button>
+        <button class="btn2" id="btnSwitch">🔁 Tempo Testnet’e Geç</button>
+      </div>
+      <div style="margin-top:10px;">
+        Durum: <span id="status" class="muted">Bağlı değil</span>
+      </div>
+      <div style="margin-top:6px;">
+        Cüzdan: <span id="addr" class="mono muted">-</span>
+      </div>
+      <div style="margin-top:6px;">
+        Ağ: <span id="chain" class="mono muted">-</span>
+      </div>
+
+      <hr style="border:0;border-top:1px solid rgba(255,255,255,0.12);margin:14px 0;" />
+
+      <div class="muted" style="font-size:14px;">
+        Tempo testnet ağ bilgileri (dokümana göre): Chain ID <span class="mono">42429</span>, RPC <span class="mono">https://rpc.testnet.tempo.xyz</span>, Explorer <span class="mono">https://explore.tempo.xyz</span>, sembol <span class="mono">USD</span>. ([docs.tempo.xyz](https://docs.tempo.xyz/quickstart/connection-details?utm_source=openai))
+      </div>
+      <div class="muted" style="font-size:14px; margin-top:8px;">
+        Test fon (stablecoin) almak için dokümanda RPC yöntemi: <span class="mono">tempo_fundAddress</span>. ([docs.tempo.xyz](https://docs.tempo.xyz/guide/use-accounts/add-funds?utm_source=openai))
+      </div>
     </div>
-</div>
 
-<script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+    <div class="card" id="gameCard" style="display:none;">
+      <div class="row" style="justify-content:space-between;">
+        <div>⏱️ Süre: <span id="time" class="mono">30</span>s</div>
+        <div>Skor: <span id="score" class="big">0</span></div>
+      </div>
 
-// Audio
-let audioStarted = false;
-let bgMusic = null;
+      <div id="target">👆</div>
 
-function initAudio() {
-    if (audioStarted) return;
-    audioStarted = true;
-    Tone.start();
-    
-    const synth = new Tone.Synth({
-        oscillator: { type: 'square' },
-        envelope: { attack: 0.01, decay: 0.1, sustain: 0.3, release: 0.1 }
-    }).toDestination();
-    synth.volume.value = -15;
-    
-    const bassLine = ['C2', 'C2', 'E2', 'G2', 'C2', 'C2', 'D2', 'E2'];
-    let noteIndex = 0;
-    
-    bgMusic = new Tone.Loop((time) => {
-        synth.triggerAttackRelease(bassLine[noteIndex % bassLine.length], '8n', time);
-        noteIndex++;
-    }, '8n');
-    
-    Tone.Transport.bpm.value = 140;
-    Tone.Transport.start();
-    bgMusic.start(0);
-}
+      <div class="row" style="justify-content:center;">
+        <button class="btn2" id="btnStart">🚀 Başlat</button>
+      </div>
 
-function playHitSound() {
-    const noise = new Tone.NoiseSynth({
-        noise: { type: 'white' },
-        envelope: { attack: 0.005, decay: 0.2, sustain: 0 }
-    }).toDestination();
-    noise.volume.value = -10;
-    noise.triggerAttackRelease('8n');
-}
+      <div style="margin-top:12px;">
+        Zincirdeki best score: <span id="bestOnchain" class="mono muted">-</span>
+      </div>
+      <div style="margin-top:6px;">
+        Son tx: <span id="lastTx" class="mono muted">-</span>
+      </div>
 
-function playLaneSound() {
-    const synth = new Tone.Synth({
-        oscillator: { type: 'sine' },
-        envelope: { attack: 0.01, decay: 0.05, sustain: 0, release: 0.05 }
-    }).toDestination();
-    synth.volume.value = -20;
-    synth.triggerAttackRelease('C5', '32n');
-}
+      <div class="muted" style="font-size:13px;margin-top:10px;">
+        Oyun bitince skor, Tempo Testnet üzerinde Scoreboard kontratına yazılır (TX onayı MetaMask’te çıkar).
+      </div>
+    </div>
+  </div>
 
-// Game State
-let gameActive = false;
-let score = 0;
-let highScore = 0;
-let speed = 1;
-let maxSpeed = 3;
-let frameCount = 0;
+  <!-- ethers v6 UMD -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+  <script>
+    // === Tempo Testnet (Andantino) parametreleri (dokümandan) ===
+    const TEMPO = {
+      chainIdDec: 42429,
+      chainIdHex: "0xA5BD", // 42429
+      chainName: "Tempo Testnet (Andantino)",
+      rpcUrls: ["https://rpc.testnet.tempo.xyz"],
+      blockExplorerUrls: ["https://explore.tempo.xyz"],
+      nativeCurrency: {
+        name: "USD",
+        symbol: "USD",
+        // Dokümanda bazı cüzdanlarda 18 gerekebileceği notu var
+        decimals: 18
+      }
+    };
 
-// Player
-const player = {
-    lane: 1,
-    targetLane: 1,
-    x: 0,
-    y: 0,
-    width: 30,
-    height: 50,
-    bobOffset: 0
-};
+    // === 1) Buraya deploy ettiğin kontrat adresini koy ===
+    const SCOREBOARD_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-// Cars (obstacles)
-let cars = [];
-
-// Road markings
-let roadMarkings = [];
-
-// Background elements (parallax)
-let bgMountains = [];
-let bgTrees = [];
-let bgClouds = [];
-
-// IMPROVED PERSPECTIVE SETTINGS - Much deeper road view
-const horizonY = 0.18; // Ufuk çizgisi daha yukarıda (daha derin görünüm)
-const roadWidthNear = 0.75; // Yakın kısım biraz daha geniş
-const roadWidthFar = 0.04; // Uzak kısım çok daha dar (güçlü perspektif)
-const vanishingPointX = 0.5;
-
-// Car spawn settings - spawn much further away
-const CAR_SPAWN_Z = 0.98; // Arabalar çok uzaktan doğacak
-const CAR_VISIBLE_Z = 0.95; // Görünür olmaya başlayacakları nokta
-const PLAYER_Z = 0.02; // Oyuncu pozisyonu (çok yakın)
-const COLLISION_Z = 0.08; // Çarpışma mesafesi
-
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    player.y = canvas.height * 0.88;
-}
-
-function initBackground() {
-    bgMountains = [];
-    bgTrees = [];
-    bgClouds = [];
-    
-    for (let i = 0; i < 12; i++) {
-        bgMountains.push({
-            x: i * 0.12,
-            height: 0.08 + Math.random() * 0.12,
-            width: 0.08 + Math.random() * 0.08
-        });
-    }
-    
-    for (let i = 0; i < 30; i++) {
-        bgTrees.push({
-            x: Math.random(),
-            side: Math.random() > 0.5 ? 1 : -1,
-            z: 0.1 + Math.random() * 0.85,
-            type: Math.floor(Math.random() * 3)
-        });
-    }
-    
-    for (let i = 0; i < 8; i++) {
-        bgClouds.push({
-            x: Math.random(),
-            y: 0.02 + Math.random() * 0.12,
-            size: 20 + Math.random() * 30
-        });
-    }
-}
-
-function initRoadMarkings() {
-    roadMarkings = [];
-    // Daha fazla yol çizgisi, daha derin görünüm için
-    for (let i = 0; i < 40; i++) {
-        roadMarkings.push({
-            z: i * 0.025
-        });
-    }
-}
-
-function spawnCar() {
-    const carTypes = [
-        { color: '#e74c3c', width: 40, height: 70 },
-        { color: '#3498db', width: 45, height: 80 },
-        { color: '#2ecc71', width: 35, height: 65 },
-        { color: '#9b59b6', width: 50, height: 90 },
-        { color: '#f39c12', width: 38, height: 68 },
-        { color: '#1abc9c', width: 42, height: 75 },
-        { color: '#e91e63', width: 36, height: 66 }
+    // Minimal ABI
+    const SCOREBOARD_ABI = [
+      "function bestScore(address) view returns (uint256)",
+      "function submitScore(uint256 score)",
+      "event ScoreSubmitted(address indexed player, uint256 score, uint256 newBest)"
     ];
-    
-    const type = carTypes[Math.floor(Math.random() * carTypes.length)];
-    const lane = Math.floor(Math.random() * 3);
-    
-    // Aynı şeritte çok yakın araba olmasın
-    const tooClose = cars.some(car => car.lane === lane && car.z > 0.85);
-    if (tooClose) return;
-    
-    cars.push({
-        lane: lane,
-        z: CAR_SPAWN_Z, // Çok uzaktan başla
-        speed: 0.003 + Math.random() * 0.002, // Daha yavaş hareket (uzun mesafe)
-        ...type
-    });
-}
 
-function getLaneX(lane, z) {
-    const horizonX = canvas.width * vanishingPointX;
-    const roadWidthAtZ = lerp(roadWidthFar, roadWidthNear, Math.pow(1 - z, 1.5));
-    const roadLeft = horizonX - (canvas.width * roadWidthAtZ) / 2;
-    const roadRight = horizonX + (canvas.width * roadWidthAtZ) / 2;
-    const laneWidth = (roadRight - roadLeft) / 3;
-    return roadLeft + laneWidth * (lane + 0.5);
-}
+    let provider, signer, account, contract;
+    let running = false, timeLeft = 30, timer = null, score = 0;
 
-function getYFromZ(z) {
-    const horizonYPx = canvas.height * horizonY;
-    // Daha dramatik perspektif eğrisi
-    const perspective = Math.pow(1 - z, 1.8);
-    return horizonYPx + (canvas.height - horizonYPx) * perspective;
-}
+    const el = (id) => document.getElementById(id);
 
-function getScaleFromZ(z) {
-    return Math.pow(1 - z, 1.2);
-}
-
-function lerp(a, b, t) {
-    return a + (b - a) * t;
-}
-
-function drawSky() {
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height * horizonY + 100);
-    gradient.addColorStop(0, '#0f0c29');
-    gradient.addColorStop(0.3, '#302b63');
-    gradient.addColorStop(0.6, '#24243e');
-    gradient.addColorStop(1, '#e94560');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height * horizonY + 100);
-    
-    // Stars
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-    for (let i = 0; i < 50; i++) {
-        const x = (Math.sin(i * 567.89) * 0.5 + 0.5) * canvas.width;
-        const y = (Math.sin(i * 123.45) * 0.5 + 0.5) * canvas.height * horizonY * 0.7;
-        const size = 1 + Math.random();
-        ctx.fillRect(x, y, size, size);
+    function isMetaMaskReady() {
+      return !!(window.ethereum && window.ethereum.isMetaMask);
     }
-}
 
-function drawClouds() {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-    bgClouds.forEach(cloud => {
-        const x = ((cloud.x + frameCount * 0.00003) % 1.2 - 0.1) * canvas.width;
-        const y = cloud.y * canvas.height;
-        
-        ctx.beginPath();
-        ctx.arc(x, y, cloud.size, 0, Math.PI * 2);
-        ctx.arc(x + cloud.size * 0.6, y - cloud.size * 0.2, cloud.size * 0.7, 0, Math.PI * 2);
-        ctx.arc(x + cloud.size * 1.2, y, cloud.size * 0.8, 0, Math.PI * 2);
-        ctx.fill();
-    });
-}
+    async function ensureTempoNetwork() {
+      const chainId = await window.ethereum.request({ method: "eth_chainId" });
+      el("chain").textContent = chainId;
 
-function drawMountains() {
-    const horizonYPx = canvas.height * horizonY;
-    
-    // Distant mountains (darker, smaller)
-    ctx.fillStyle = '#1a1a2e';
-    bgMountains.forEach((m, i) => {
-        if (i % 2 === 0) {
-            const x = ((m.x + frameCount * 0.00001) % 1.3 - 0.15) * canvas.width;
-            const h = m.height * 0.6 * canvas.height;
-            const w = m.width * canvas.width;
-            
-            ctx.beginPath();
-            ctx.moveTo(x - w, horizonYPx);
-            ctx.lineTo(x, horizonYPx - h);
-            ctx.lineTo(x + w, horizonYPx);
-            ctx.closePath();
-            ctx.fill();
+      if (chainId === TEMPO.chainIdHex) return;
+
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: TEMPO.chainIdHex }]
+        });
+      } catch (e) {
+        // 4902: network not added
+        if (e && e.code === 4902) {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [TEMPO]
+          });
+        } else {
+          throw e;
         }
-    });
-    
-    // Closer mountains
-    ctx.fillStyle = '#2d3436';
-    bgMountains.forEach((m, i) => {
-        if (i % 2 === 1) {
-            const x = ((m.x + frameCount * 0.00002) % 1.3 - 0.15) * canvas.width;
-            const h = m.height * canvas.height;
-            const w = m.width * canvas.width;
-            
-            ctx.beginPath();
-            ctx.moveTo(x - w, horizonYPx);
-            ctx.lineTo(x, horizonYPx - h);
-            ctx.lineTo(x + w, horizonYPx);
-            ctx.closePath();
-            ctx.fill();
+      }
+
+      const newChainId = await window.ethereum.request({ method: "eth_chainId" });
+      el("chain").textContent = newChainId;
+    }
+
+    function shortAddr(a) {
+      return a ? (a.slice(0, 6) + "..." + a.slice(-4)) : "-";
+    }
+
+    async function connect() {
+      if (!isMetaMaskReady()) {
+        el("status").textContent = "MetaMask bulunamadı. Chrome eklentisini kurmalısın.";
+        return;
+      }
+
+      el("status").textContent = "Bağlanılıyor...";
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      account = accounts[0];
+      el("addr").textContent = shortAddr(account);
+
+      await ensureTempoNetwork();
+
+      provider = new ethers.BrowserProvider(window.ethereum);
+      signer = await provider.getSigner();
+
+      // Kontrat adresi ayarlıysa kontrata bağlan
+      if (SCOREBOARD_ADDRESS && SCOREBOARD_ADDRESS !== "0x0000000000000000000000000000000000000000") {
+        contract = new ethers.Contract(SCOREBOARD_ADDRESS, SCOREBOARD_ABI, signer);
+        await refreshBestOnchain();
+      } else {
+        el("bestOnchain").textContent = "(Kontrat adresi girilmedi)";
+      }
+
+      el("status").textContent = "Bağlandı ✅";
+      el("connectCard").style.display = "none";
+      el("gameCard").style.display = "block";
+    }
+
+    async function refreshBestOnchain() {
+      if (!contract || !account) return;
+      const best = await contract.bestScore(account);
+      el("bestOnchain").textContent = best.toString();
+    }
+
+    function resetGameUI() {
+      score = 0;
+      timeLeft = 30;
+      el("score").textContent = "0";
+      el("time").textContent = "30";
+    }
+
+    function stopTimer() {
+      if (timer) clearInterval(timer);
+      timer = null;
+    }
+
+    async function endGame() {
+      running = false;
+      stopTimer();
+
+      // Skoru zincire yaz
+      if (!contract) {
+        el("lastTx").textContent = "Kontrat yok (SCOREBOARD_ADDRESS ayarla)";
+        return;
+      }
+
+      try {
+        el("lastTx").textContent = "TX gönderiliyor (MetaMask onayı bekler)...";
+        const tx = await contract.submitScore(score);
+        el("lastTx").textContent = tx.hash;
+
+        await tx.wait();
+        await refreshBestOnchain();
+      } catch (e) {
+        el("lastTx").textContent = "TX başarısız / reddedildi: " + (e?.message || e);
+      }
+    }
+
+    function startGame() {
+      if (!account) return;
+      if (running) return;
+
+      resetGameUI();
+      running = true;
+
+      timer = setInterval(async () => {
+        timeLeft -= 1;
+        el("time").textContent = String(timeLeft);
+
+        if (timeLeft <= 0) {
+          await endGame();
         }
-    });
-}
-
-function drawRoad() {
-    const horizonYPx = canvas.height * horizonY;
-    const horizonX = canvas.width * vanishingPointX;
-    
-    // Ground with gradient
-    const groundGradient = ctx.createLinearGradient(0, horizonYPx, 0, canvas.height);
-    groundGradient.addColorStop(0, '#0d3320');
-    groundGradient.addColorStop(1, '#1a472a');
-    ctx.fillStyle = groundGradient;
-    ctx.fillRect(0, horizonYPx, canvas.width, canvas.height - horizonYPx);
-    
-    // Road surface with gradient for depth
-    const roadGradient = ctx.createLinearGradient(0, horizonYPx, 0, canvas.height);
-    roadGradient.addColorStop(0, '#1a1a1a');
-    roadGradient.addColorStop(0.5, '#2c2c2c');
-    roadGradient.addColorStop(1, '#3a3a3a');
-    ctx.fillStyle = roadGradient;
-    
-    ctx.beginPath();
-    ctx.moveTo(horizonX - canvas.width * roadWidthFar / 2, horizonYPx);
-    ctx.lineTo(horizonX + canvas.width * roadWidthFar / 2, horizonYPx);
-    ctx.lineTo(canvas.width * (0.5 + roadWidthNear / 2), canvas.height);
-    ctx.lineTo(canvas.width * (0.5 - roadWidthNear / 2), canvas.height);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Road edge lines (yellow)
-    ctx.strokeStyle = '#f1c40f';
-    ctx.lineWidth = 5;
-    
-    ctx.beginPath();
-    ctx.moveTo(horizonX - canvas.width * roadWidthFar / 2, horizonYPx);
-    ctx.lineTo(canvas.width * (0.5 - roadWidthNear / 2), canvas.height);
-    ctx.stroke();
-    
-    ctx.beginPath();
-    ctx.moveTo(horizonX + canvas.width * roadWidthFar / 2, horizonYPx);
-    ctx.lineTo(canvas.width * (0.5 + roadWidthNear / 2), canvas.height);
-    ctx.stroke();
-}
-
-function drawRoadMarkings() {
-    const horizonX = canvas.width * vanishingPointX;
-    
-    roadMarkings.forEach(marking => {
-        marking.z -= speed * 0.012;
-        if (marking.z < 0) marking.z += 1;
-        
-        if (marking.z < 0.98 && marking.z > 0.02) {
-            const y = getYFromZ(marking.z);
-            const scale = getScaleFromZ(marking.z);
-            const roadWidth = lerp(roadWidthFar, roadWidthNear, Math.pow(1 - marking.z, 1.5)) * canvas.width;
-            
-            // Daha soluk çizgiler uzakta
-            const alpha = Math.min(1, (1 - marking.z) * 1.5);
-            ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.9})`;
-            
-            // Lane dividers
-            for (let i = 1; i < 3; i++) {
-                const x = horizonX - roadWidth / 2 + (roadWidth / 3) * i;
-                const markWidth = Math.max(2, 10 * scale);
-                const markHeight = Math.max(4, 40 * scale);
-                ctx.fillRect(x - markWidth / 2, y - markHeight / 2, markWidth, markHeight);
-            }
-        }
-    });
-}
-
-function drawTrees() {
-    const horizonYPx = canvas.height * horizonY;
-    
-    bgTrees.sort((a, b) => b.z - a.z);
-    
-    bgTrees.forEach(tree => {
-        tree.z -= speed * 0.006;
-        if (tree.z < 0.05) {
-            tree.z = 0.95;
-            tree.x = Math.random();
-            tree.side = Math.random() > 0.5 ? 1 : -1;
-        }
-        
-        if (tree.z > 0.1 && tree.z < 0.95) {
-            const roadWidth = lerp(roadWidthFar, roadWidthNear, Math.pow(1 - tree.z, 1.5)) * canvas.width;
-            const roadEdge = canvas.width / 2 + (roadWidth / 2 + 20 + Math.random() * 30) * tree.side;
-            const y = getYFromZ(tree.z);
-            const scale = getScaleFromZ(tree.z);
-            
-            if (scale > 0.05) {
-                // Tree trunk
-                ctx.fillStyle = '#3d2817';
-                const trunkWidth = Math.max(2, 8 * scale);
-                const trunkHeight = Math.max(4, 35 * scale);
-                ctx.fillRect(roadEdge - trunkWidth / 2, y - trunkHeight, trunkWidth, trunkHeight);
-                
-                // Tree foliage
-                ctx.fillStyle = '#1e5631';
-                ctx.beginPath();
-                ctx.moveTo(roadEdge, y - trunkHeight - 30 * scale);
-                ctx.lineTo(roadEdge - 20 * scale, y - trunkHeight + 5);
-                ctx.lineTo(roadEdge + 20 * scale, y - trunkHeight + 5);
-                ctx.closePath();
-                ctx.fill();
-            }
-        }
-    });
-}
-
-function drawCars() {
-    cars.sort((a, b) => b.z - a.z);
-    
-    cars.forEach(car => {
-        // Sadece görünür aralıkta çiz
-        if (car.z > 0.03 && car.z < CAR_VISIBLE_Z) {
-            const x = getLaneX(car.lane, car.z);
-            const y = getYFromZ(car.z);
-            const scale = getScaleFromZ(car.z);
-            
-            // Çok küçükse çizme
-            if (scale < 0.03) return;
-            
-            const w = car.width * scale;
-            const h = car.height * scale;
-            
-            // Uzaktaki arabalar daha soluk
-            const alpha = Math.min(1, (1 - car.z) * 2);
-            
-            // Car shadow
-            ctx.fillStyle = `rgba(0, 0, 0, ${0.3 * alpha})`;
-            ctx.beginPath();
-            ctx.ellipse(x, y + h * 0.1, w * 0.6, h * 0.15, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Car body
-            ctx.fillStyle = car.color;
-            ctx.globalAlpha = alpha;
-            ctx.fillRect(x - w / 2, y - h, w, h * 0.9);
-            
-            // Car roof
-            ctx.fillStyle = shadeColor(car.color, -30);
-            ctx.fillRect(x - w * 0.35, y - h * 0.85, w * 0.7, h * 0.35);
-            
-            // Windshield
-            ctx.fillStyle = '#74b9ff';
-            ctx.fillRect(x - w * 0.3, y - h * 0.8, w * 0.6, h * 0.15);
-            
-            // Rear lights (glow effect for closer cars)
-            if (scale > 0.3) {
-                ctx.fillStyle = '#ff3333';
-                ctx.shadowColor = '#ff0000';
-                ctx.shadowBlur = 10 * scale;
-            } else {
-                ctx.fillStyle = '#e74c3c';
-                ctx.shadowBlur = 0;
-            }
-            ctx.fillRect(x - w * 0.4, y - h * 0.15, w * 0.15, h * 0.1);
-            ctx.fillRect(x + w * 0.25, y - h * 0.15, w * 0.15, h * 0.1);
-            ctx.shadowBlur = 0;
-            
-            // Wheels
-            ctx.fillStyle = '#1a1a1a';
-            ctx.fillRect(x - w * 0.5, y - h * 0.2, w * 0.15, h * 0.2);
-            ctx.fillRect(x + w * 0.35, y - h * 0.2, w * 0.15, h * 0.2);
-            
-            ctx.globalAlpha = 1;
-        }
-    });
-}
-
-function drawPlayer() {
-    const targetX = getLaneX(player.targetLane, PLAYER_Z);
-    player.x = lerp(player.x, targetX, 0.18);
-    
-    player.bobOffset = Math.sin(frameCount * 0.35) * 4;
-    
-    const x = player.x;
-    const y = player.y + player.bobOffset;
-    const scale = 2.8;
-    
-    // Shadow
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.beginPath();
-    ctx.ellipse(x, player.y + 30, 25, 10, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Legs animation
-    const legPhase = Math.sin(frameCount * 0.5);
-    ctx.fillStyle = '#2c3e50';
-    ctx.fillRect(x - 10 * scale + legPhase * 3, y - 5, 6 * scale, 14 * scale);
-    ctx.fillRect(x + 4 * scale - legPhase * 3, y - 5, 6 * scale, 14 * scale);
-    
-    // Body
-    ctx.fillStyle = '#e74c3c';
-    ctx.fillRect(x - 12 * scale, y - 28 * scale, 24 * scale, 22 * scale);
-    
-    // Number on back
-    ctx.fillStyle = '#ffffff';
-    ctx.font = `bold ${12 * scale}px Arial`;
-    ctx.textAlign = 'center';
-    ctx.fillText('1', x, y - 12 * scale);
-    
-    // Arms animation
-    const armPhase = Math.sin(frameCount * 0.5);
-    ctx.fillStyle = '#ffeaa7';
-    ctx.fillRect(x - 16 * scale, y - 24 * scale + armPhase * 6, 5 * scale, 14 * scale);
-    ctx.fillRect(x + 11 * scale, y - 24 * scale - armPhase * 6, 5 * scale, 14 * scale);
-    
-    // Head
-    ctx.fillStyle = '#ffeaa7';
-    ctx.fillRect(x - 8 * scale, y - 42 * scale, 16 * scale, 16 * scale);
-    
-    // Hair
-    ctx.fillStyle = '#2c3e50';
-    ctx.fillRect(x - 9 * scale, y - 44 * scale, 18 * scale, 6 * scale);
-    
-    // Eyes
-    ctx.fillStyle = '#2c3e50';
-    ctx.fillRect(x - 5 * scale, y - 38 * scale, 3 * scale, 3 * scale);
-    ctx.fillRect(x + 2 * scale, y - 38 * scale, 3 * scale, 3 * scale);
-}
-
-function shadeColor(color, percent) {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) + amt;
-    const G = (num >> 8 & 0x00FF) + amt;
-    const B = (num & 0x0000FF) + amt;
-    return '#' + (0x1000000 + 
-        (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + 
-        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + 
-        (B < 255 ? B < 1 ? 0 : B : 255)
-    ).toString(16).slice(1);
-}
-
-function updateCars() {
-    cars.forEach((car, index) => {
-        car.z -= (car.speed + speed * 0.008);
-        
-        // Collision detection
-        if (car.z < COLLISION_Z && car.z > 0.01 && car.lane === player.targetLane) {
-            gameOver();
-        }
-        
-        // Remove cars that passed
-        if (car.z < -0.05) {
-            cars.splice(index, 1);
-            score += 15;
-        }
-    });
-    
-    // Spawn new cars - adjusted rate for longer road
-    const spawnRate = Math.max(40, 100 - Math.floor(score / 150) * 5);
-    if (frameCount % spawnRate === 0) {
-        spawnCar();
+      }, 1000);
     }
-    
-    // Occasionally spawn multiple cars
-    if (frameCount % (spawnRate * 2) === 0 && Math.random() > 0.5) {
-        setTimeout(() => spawnCar(), 100);
+
+    function clickTarget() {
+      if (!running) return;
+      score += 1;
+      el("score").textContent = String(score);
     }
-}
 
-function updateGame() {
-    frameCount++;
-    
-    if (frameCount % 400 === 0 && speed < maxSpeed) {
-        speed += 0.08;
+    // UI hooks
+    el("btnConnect").onclick = connect;
+    el("btnSwitch").onclick = async () => {
+      try { await ensureTempoNetwork(); el("status").textContent = "Tempo Testnet aktif ✅"; }
+      catch (e) { el("status").textContent = "Ağ değişimi başarısız: " + (e?.message || e); }
+    };
+    el("btnStart").onclick = startGame;
+    el("target").onclick = clickTarget;
+
+    // MetaMask events
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", (accs) => {
+        account = accs?.[0] || null;
+        el("addr").textContent = shortAddr(account);
+      });
+      window.ethereum.on("chainChanged", (cid) => {
+        el("chain").textContent = cid;
+      });
     }
-    
-    score += Math.floor(speed);
-    
-    document.getElementById('score-display').textContent = `SCORE: ${score}`;
-    document.getElementById('speed-display').textContent = `SPEED: ${Math.floor(60 + speed * 40)} MPH`;
-}
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    drawSky();
-    drawClouds();
-    drawMountains();
-    drawRoad();
-    drawRoadMarkings();
-    drawTrees();
-    drawCars();
-    drawPlayer();
-    
-    // Speed lines effect
-    if (speed > 1.5) {
-        ctx.strokeStyle = `rgba(255, 255, 255, ${(speed - 1.5) * 0.1})`;
-        ctx.lineWidth = 2;
-        for (let i = 0; i < 10; i++) {
-            const x = Math.random() * canvas.width;
-            const y = canvas.height * 0.3 + Math.random() * canvas.height * 0.6;
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x, y + 30 + speed * 20);
-            ctx.stroke();
-        }
-    }
-}
-
-function gameLoop() {
-    if (!gameActive) return;
-    
-    updateGame();
-    updateCars();
-    draw();
-    
-    requestAnimationFrame(gameLoop);
-}
-
-function startGame() {
-    initAudio();
-    
-    gameActive = true;
-    score = 0;
-    speed = 1;
-    frameCount = 0;
-    cars = [];
-    player.lane = 1;
-    player.targetLane = 1;
-    player.x = getLaneX(1, PLAYER_Z);
-    
-    initBackground();
-    initRoadMarkings();
-    
-    document.getElementById('start-screen').classList.add('hidden');
-    document.getElementById('gameover-screen').classList.add('hidden');
-    document.getElementById('hud').classList.remove('hidden');
-    document.getElementById('mobile-controls').classList.remove('hidden');
-    document.getElementById('high-display').textContent = `BEST: ${highScore}`;
-    
-    if (bgMusic) bgMusic.start(0);
-    
-    gameLoop();
-}
-
-function gameOver() {
-    gameActive = false;
-    playHitSound();
-    
-    if (score > highScore) {
-        highScore = score;
-    }
-    
-    document.getElementById('final-score').textContent = score;
-    document.getElementById('high-score-text').textContent = `HIGH SCORE: ${highScore}`;
-    document.getElementById('gameover-screen').classList.remove('hidden');
-    document.getElementById('mobile-controls').classList.add('hidden');
-}
-
-function moveLeft() {
-    if (player.targetLane > 0) {
-        player.targetLane--;
-        playLaneSound();
-    }
-}
-
-function moveRight() {
-    if (player.targetLane < 2) {
-        player.targetLane++;
-        playLaneSound();
-    }
-}
-
-// Event Listeners
-window.addEventListener('keydown', (e) => {
-    if (!gameActive) return;
-    
-    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-        moveLeft();
-    } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-        moveRight();
-    } else if (e.key === ' ') {
-        speed = Math.min(maxSpeed, speed + 0.4);
-        e.preventDefault();
-    }
-});
-
-window.addEventListener('keyup', (e) => {
-    if (e.key === ' ') {
-        speed = Math.max(1, speed - 0.3);
-    }
-});
-
-document.getElementById('btn-left').addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (gameActive) moveLeft();
-});
-
-document.getElementById('btn-right').addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (gameActive) moveRight();
-});
-
-let touchStartX = 0;
-canvas.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-});
-
-canvas.addEventListener('touchend', (e) => {
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchEndX - touchStartX;
-    
-    if (Math.abs(diff) > 50) {
-        if (diff > 0) moveRight();
-        else moveLeft();
-    }
-});
-
-document.getElementById('start-btn').addEventListener('click', startGame);
-document.getElementById('restart-btn').addEventListener('click', startGame);
-
-window.addEventListener('resize', resize);
-resize();
-
-player.x = getLaneX(1, PLAYER_Z);
-</script>
-
+  </script>
 </body>
 </html>
